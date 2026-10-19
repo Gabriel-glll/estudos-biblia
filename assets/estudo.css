@@ -32,7 +32,7 @@ a{color:var(--gold)}
 #dots span{position:absolute;left:18px;top:50%;transform:translateY(-50%);white-space:nowrap;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
   color:var(--gold);opacity:0;transition:.3s;pointer-events:none}
 #dots a:hover span{opacity:1}
-@media (max-width:820px){#dots span{display:none}#dots{left:6px}}
+@media (max-width:820px){#dots,#crumb{display:none}}
 
 /* grão de filme */
 body::after{content:"";position:fixed;inset:-50%;pointer-events:none;z-index:100;opacity:.06;
@@ -59,7 +59,7 @@ body::after{content:"";position:fixed;inset:-50%;pointer-events:none;z-index:100
 .corner.tr{top:50px;right:clamp(16px,4vw,56px);text-align:right}
 .corner.bl{bottom:22px;left:clamp(30px,4vw,56px)}
 .corner.br{bottom:22px;right:clamp(16px,4vw,56px);text-align:right}
-@media (max-width:720px){.corner.tr,.corner.br{display:none}}
+@media (max-width:720px){.corner.tr,.corner.br{display:none}.hero .scrollhint{display:none}}
 .scrollhint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:3;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#a8987f}
 .htitle{position:absolute;left:clamp(30px,5vw,70px);right:clamp(16px,5vw,70px);bottom:clamp(40px,9vh,90px);z-index:3}
 .htitle .ref{font-size:13px;letter-spacing:.35em;text-transform:uppercase;color:var(--gold2);margin-bottom:12px;opacity:0}
@@ -96,13 +96,13 @@ h3{font-family:var(--serif);font-size:28px;font-weight:600;line-height:1.15}
 
 /* cartões empilhados */
 .cardsStack{max-width:760px;margin:20px auto 0;padding-bottom:10vh}
-.cardsStack .q{position:sticky;top:calc(14vh + var(--i) * 22px);margin-bottom:24vh;transform-origin:center top;
-  background:var(--card);border:1px solid var(--line);border-radius:26px;padding:clamp(26px,5vw,48px);box-shadow:0 30px 60px -30px rgba(0,0,0,.35);min-height:300px}
+.cardsStack .q{position:sticky;top:calc(10vh + var(--i) * 84px);margin-bottom:22vh;transform-origin:center top;
+  background:var(--card);border:1px solid var(--line);border-radius:26px;padding:20px clamp(22px,4vw,40px) clamp(24px,4vw,36px);box-shadow:0 -10px 40px -20px rgba(0,0,0,.3);min-height:240px}
 .cardsStack .q:last-child{margin-bottom:0}
-.q .num{position:absolute;right:26px;top:14px;font-family:var(--serif);font-size:80px;line-height:1;color:var(--gold);opacity:.18;font-weight:600}
-.q .ic{font-size:34px;margin-bottom:8px}
+.q .num{position:absolute;right:22px;top:6px;font-family:var(--serif);font-size:64px;line-height:1;color:var(--gold);opacity:.18;font-weight:600}
+.q .ic{font-size:26px;margin-bottom:4px;float:left;margin-right:10px}
 .q .lb{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
-.q .val{font-family:var(--serif);font-size:clamp(28px,4vw,40px);font-weight:600;line-height:1.1;margin:6px 0 14px}
+.q .val{font-family:var(--serif);font-size:clamp(24px,3.4vw,34px);font-weight:600;line-height:1.1;margin:4px 0 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .q p{font-size:16px;color:var(--muted)}
 
 /* palavras que acendem */
@@ -137,7 +137,7 @@ h3{font-family:var(--serif);font-size:28px;font-weight:600;line-height:1.15}
 .scripture{font-family:var(--serif);font-size:clamp(22px,2.6vw,27px);line-height:1.8}
 .scripture .ph{margin-bottom:24px}
 .scripture sup{font-family:var(--sans);font-size:11px;font-weight:700;color:var(--gold);margin:0 4px 0 2px;vertical-align:super}
-.fx .scripture .v{opacity:.22;transition:opacity .6s,color .6s}
+.fx .scripture .v{opacity:.45;transition:opacity .6s,color .6s}
 .fx .scripture .v.on{opacity:1}
 .vernote{font-size:13px;color:var(--muted);margin-top:30px;border-top:1px solid var(--line);padding-top:14px}
 
@@ -146,7 +146,7 @@ h3{font-family:var(--serif);font-size:28px;font-weight:600;line-height:1.15}
 .blk .txt{position:sticky;top:70px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px;font-family:var(--serif);font-size:20px;line-height:1.7;overflow:hidden}
 .blk .txt sup{font-family:var(--sans);font-size:10px;font-weight:700;color:var(--gold);margin-right:3px}
 .blk .txt .rng{font-family:var(--sans);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:8px}
-.blk .bnum{position:absolute;right:14px;bottom:-14px;font-size:120px;line-height:1;font-weight:600;color:var(--gold);opacity:.1;pointer-events:none}
+.blk .bnum{position:absolute;right:14px;bottom:-14px;font-size:120px;line-height:1;font-weight:600;color:var(--gold);opacity:.06;pointer-events:none}
 .blk .txt mark{background:linear-gradient(color-mix(in srgb,var(--gold2) 38%,transparent),color-mix(in srgb,var(--gold2) 38%,transparent)) no-repeat 0 85%/0% 60%;
   color:inherit;padding:0 2px;border-radius:3px;transition:background-size 1.2s cubic-bezier(.2,.7,.2,1)}
 .blk .txt mark.lit,.nofx .blk .txt mark{background-size:100% 60%}
@@ -206,7 +206,7 @@ footer{padding:50px 16px 70px;text-align:center;font-size:13px;color:var(--muted
 footer ul{list-style:none;margin:12px 0}
 
 /* índice */
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
 .card{position:relative;border-radius:20px;overflow:hidden;min-height:260px;color:#fff;text-decoration:none;display:flex;align-items:flex-end;background:#2a2118}
 .card .bgimg{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform .8s}
 .card:hover .bgimg{transform:scale(1.06)}
@@ -234,3 +234,14 @@ footer ul{list-style:none;margin:12px 0}
 .ihero p{font-family:var(--serif);font-style:italic;font-size:clamp(20px,3vw,28px);margin-top:18px;opacity:.9}
 .ihero .credit{position:absolute;bottom:10px;right:14px;z-index:2;font-size:11px;opacity:.6}
 .ihero .scrollhint{color:#efe4cf}
+
+/* índice: capítulos do livro */
+#caps .back{display:inline-block;margin-bottom:24px;font-size:13px;letter-spacing:.15em;text-transform:uppercase;text-decoration:none}
+.chapters{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+.chap{position:relative;display:flex;align-items:flex-end;min-height:240px;border-radius:20px;overflow:hidden;background:var(--dark);color:#fff;text-decoration:none}
+.chap .bgimg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.45;transition:transform .8s,opacity .4s}
+.chap:hover .bgimg{transform:scale(1.06);opacity:.6}
+.chap .cn{position:absolute;top:6px;right:16px;font-family:var(--serif);font-size:110px;line-height:1;font-weight:600;color:var(--gold2)}
+.chap .in{position:relative;padding:20px}
+.chap h3{font-size:24px}
+.chap .dt{font-size:12px;opacity:.75}

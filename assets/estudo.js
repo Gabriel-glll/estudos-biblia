@@ -19,12 +19,13 @@
     marks.forEach(m => { t = t.replace(new RegExp('(' + m.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'i'), '<mark>$1</mark>'); });
     return `<sup>${n}</sup>${t} `;
   };
-  const img = o => o && o.src ? `<figure class="figure"><div class="clip"><img src="${esc(o.src)}" alt="${esc(o.legenda)}" loading="lazy"></div><figcaption>${md(o.legenda)}</figcaption></figure>` : '';
+  const img = o => o && o.src ? `<figure class="figure"><div class="clip"><img src="${esc(o.src)}" alt="${esc(o.legenda)}"></div><figcaption>${md(o.legenda)}</figcaption></figure>` : '';
   const marquee = txt => `<div class="marquee" aria-hidden="true"><div class="mq">${Array(8).fill(`<span>${esc(txt)}</span><i>✦</i>`).join('')}</div></div>`;
 
   document.title = `${E.livro} ${E.capitulo} · Estudos Bíblicos`;
   const I = E.introducao;
   const ref = `${E.livro} ${E.capitulo}`;
+  const livroSlug = E.livro.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, '-');
   const plain = t => String(t ?? '').replace(/\*+/g, '');
   const ringTxt = `${ref} ✶ ${E.titulo} ✶ ${plain(I.autor.titulo)} ✶ `;
   // capa no estilo "mergulho": a foto aparece dentro do número do capítulo e a câmera entra nela
@@ -52,7 +53,7 @@
   </header>`;
   let h = `
   <div id="progress"></div>
-  <div id="crumb"><a href="../">Estudos</a> · ${esc(ref)}</div>
+  <div id="crumb"><a href="../#${livroSlug}">${esc(E.livro)}</a> · cap. ${esc(E.capitulo)}</div>
   <nav id="dots"></nav>
 
   ${hero(false)}
@@ -70,6 +71,23 @@
     </div>
   </section>
 
+`;
+
+  h += `
+  <section class="bigword"><div class="bw">Leitura</div></section>
+
+  <section data-nav="Texto"><div class="wrap">
+    <div class="kicker rv">${esc(ref)}</div>
+    <h2 class="rv">Texto puro</h2>
+    <div class="scripture">
+      ${E.paragrafos.map(p => `<p class="ph">${range(p).map(n => `<span class="v"><sup>${n}</sup>${esc(E.versos[n])} </span>`).join('')}</p>`).join('')}
+    </div>
+    <p class="vernote">${md(E.notaVersao)}</p>
+  </div></section>
+
+`;
+
+  h += `
   <section class="alt" data-nav="Contexto"><div class="wrap">
     <div class="kicker rv">Contexto da época</div>
     <h2 class="rv">${esc(I.contexto.titulo)}</h2>
@@ -89,17 +107,6 @@
   </section>`;
 
   h += `
-  <section class="bigword"><div class="bw">Leitura</div></section>
-
-  <section data-nav="Texto"><div class="wrap">
-    <div class="kicker rv">${esc(ref)}</div>
-    <h2 class="rv">Texto puro</h2>
-    <div class="scripture">
-      ${E.paragrafos.map(p => `<p class="ph">${range(p).map(n => `<span class="v"><sup>${n}</sup>${esc(E.versos[n])} </span>`).join('')}</p>`).join('')}
-    </div>
-    <p class="vernote">${md(E.notaVersao)}</p>
-  </div></section>
-
   ${marquee('Estudo · versículo por versículo')}
 
   <section class="alt" data-nav="Estudo"><div class="wide">
@@ -207,7 +214,7 @@
       .to(H + ' .bignum', { scale: 45, duration: 1, ease: 'expo.in' }, .08)
       .to(H + ' .photo', { opacity: 1, duration: .25, ease: 'none' }, .72)
       .to(H + ' .photo img', { scale: 1, duration: 1.1, ease: 'none' }, .1)
-      .to(H + ' .bignum', { opacity: 0, duration: .1 }, .95)
+      .to(H + ' .bignum', { opacity: 0, duration: .12 }, .78)
       .to(H + ' h1 i', { y: 0, stagger: .1, ease: 'power3.out', duration: .4 }, 1.05)
       .to(H + ' .htitle .ref,' + H + ' .htitle p,' + H + ' .credit', { opacity: 1, duration: .3 }, 1.25);
 
@@ -222,11 +229,11 @@
     setInterval(() => loops.forEach(l => gsap.to(l, { timeScale: dir, duration: 1.2 })), 300);
 
     // títulos e blocos simples
-    $$('.rv').forEach(el => gsap.from(el, { y: 60, opacity: 0, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 88%' } }));
+    $$('.rv').forEach(el => gsap.from(el, { y: 20, opacity: 0, duration: .7, ease: 'power2.out', scrollTrigger: { trigger: el, start: 'top 95%' } }));
 
     // cartões empilhados: cada um vem por cima do anterior, que encolhe
     const cs = $$('.cardsStack .q');
-    cs.forEach((c, i) => { if (i < cs.length - 1) gsap.to(c, { scale: .9 - (cs.length - i) * .02, filter: 'brightness(.82)', ease: 'none', scrollTrigger: { trigger: cs[i + 1], start: 'top 75%', end: 'top 15%', scrub: true } }); });
+    cs.forEach((c, i) => { if (i < cs.length - 1) gsap.to($$('p', c), { opacity: 0, ease: 'none', scrollTrigger: { trigger: cs[i + 1], start: 'top 90%', end: 'top 60%', scrub: true } }); });
 
     // palavras acendendo conforme a leitura
     $$('.reveal').forEach(p => gsap.fromTo($$('.w', p), { opacity: .12 }, { opacity: 1, stagger: .05, ease: 'none', scrollTrigger: { trigger: p, start: 'top 85%', end: 'bottom 55%', scrub: true } }));
@@ -251,7 +258,7 @@
     gsap.to('.bw', { yPercent: -60, opacity: 0, ease: 'none', scrollTrigger: { trigger: '.bigword', start: 'center center', end: 'bottom top', scrub: true } });
 
     // texto puro: o versículo no centro da tela acende, o resto fica apagado
-    $$('.scripture .v').forEach(v => ScrollTrigger.create({ trigger: v, start: 'top 62%', end: 'bottom 38%', toggleClass: 'on' }));
+    $$('.scripture .v').forEach(v => ScrollTrigger.create({ trigger: v, start: 'top 78%', end: 'bottom 22%', toggleClass: 'on' }));
 
     // texto anotado: o texto fica preso e as notas entram pelo lado
     $$('.blk').forEach(b => {
@@ -267,16 +274,17 @@
       const wt = gsap.timeline({ scrollTrigger: { trigger: '.wordsPin', start: 'top top', end: '+=' + ws.length * 90 + '%', pin: '.wpin', scrub: 1,
         onUpdate: s => $$('.wcount span').forEach((d, i) => d.classList.toggle('on', i <= Math.min(ws.length - 1, Math.floor(s.progress * ws.length)))) } });
       ws.forEach((w, i) => {
-        wt.fromTo(w, { opacity: 0, scale: 1.6, filter: 'blur(14px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 1 });
-        if (i < ws.length - 1) wt.to(w, { opacity: 0, scale: .7, filter: 'blur(10px)', duration: 1 }, '+=0.6');
+        wt.fromTo(w, { opacity: 0, scale: 1.4 }, { opacity: 1, scale: 1, duration: .5 });
+        if (i < ws.length - 1) wt.to(w, { opacity: 0, scale: .85, duration: .4 }, '+=1.6');
       });
     }
 
     // curiosidade: círculo que abre até a tela cheia
     if ($('.curioPin')) {
       const ct = gsap.timeline({ scrollTrigger: { trigger: '.curioPin', start: 'top top', end: '+=160%', pin: '.cpin', scrub: 1 } });
-      ct.fromTo('.cpin .bgimg', { clipPath: 'circle(12% at 50% 50%)', scale: 1.3 }, { clipPath: 'circle(75% at 50% 50%)', scale: 1, duration: 1 })
-        .from('.cpin .in > *', { opacity: 0, y: 60, stagger: .15, duration: .6 }, '-=0.3');
+      ct.fromTo('.cpin .bgimg', { clipPath: 'circle(12% at 50% 50%)', scale: 1.3 }, { clipPath: 'circle(75% at 50% 50%)', scale: 1, duration: .8 })
+        .from('.cpin .in > *', { opacity: 0, y: 30, stagger: .1, duration: .4 }, .55)
+        .to({}, { duration: .8 });
     }
 
     // próximo estudo
@@ -299,6 +307,8 @@
       }
     });
 
-    addEventListener('load', () => ScrollTrigger.refresh());
+    let rf; const refresh = () => { clearTimeout(rf); rf = setTimeout(() => ScrollTrigger.refresh(), 200); };
+    $$('img').forEach(im => im.complete || im.addEventListener('load', refresh));
+    addEventListener('load', refresh);
   }
 })();

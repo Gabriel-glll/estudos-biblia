@@ -17,21 +17,51 @@
   <div class="credit">Grande Rolo de Isaías (Qumran) · domínio público</div>
   <div class="scrollhint">role ↓</div>
 </header>
-<section><div class="wide">
-  <div class="kicker rvi">Estudos feitos</div>
-  <h2 class="rvi">Biblioteca</h2>
+<section id="livros"><div class="wide">
+  <div class="kicker rvi">Biblioteca</div>
+  <h2 class="rvi">Escolha o livro</h2>
   <div class="cards" id="cards"></div>
+</div></section>
+<section id="caps" class="alt" hidden><div class="wide">
+  <a class="back" href="#">← todos os livros</a>
+  <div class="kicker">Capítulos estudados</div>
+  <h2 id="capsTitle"></h2>
+  <div class="chapters" id="chapters"></div>
 </div></section>
 <footer>Textos bíblicos: Bíblia Livre (CC BY) · comparações com ARA e NAA (© SBB) em trechos curtos.</footer>
 <script src="estudos/lista.js"></script>
 <script>
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  const L = (window.ESTUDOS || []).slice().reverse();
-  document.getElementById('cards').innerHTML = L.length ? L.map((e, i) => `
-    <a class="card rvi" href="estudos/${esc(e.slug)}.html">
-      <div class="bgimg" style="background-image:url('${esc(e.capa)}')"></div>
-      <div class="in"><div class="ref">${esc(e.ref)}</div><h3>${esc(e.titulo)}</h3><div class="dt">${esc(e.data)}</div></div>
-    </a>`).join('') : '<p class="empty rvi" style="grid-column:1/-1">O primeiro estudo aparece aqui. Qual capítulo vamos ler?</p>';
+  const ORDEM = ['Gênesis','Êxodo','Levítico','Números','Deuteronômio','Josué','Juízes','Rute','1 Samuel','2 Samuel','1 Reis','2 Reis','1 Crônicas','2 Crônicas','Esdras','Neemias','Ester','Jó','Salmos','Provérbios','Eclesiastes','Cantares','Isaías','Jeremias','Lamentações','Ezequiel','Daniel','Oseias','Joel','Amós','Obadias','Jonas','Miqueias','Naum','Habacuque','Sofonias','Ageu','Zacarias','Malaquias','Mateus','Marcos','Lucas','João','Atos','Romanos','1 Coríntios','2 Coríntios','Gálatas','Efésios','Filipenses','Colossenses','1 Tessalonicenses','2 Tessalonicenses','1 Timóteo','2 Timóteo','Tito','Filemom','Hebreus','Tiago','1 Pedro','2 Pedro','1 João','2 João','3 João','Judas','Apocalipse'];
+  const slugify = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, '-');
+  // agrupa os estudos por livro ("Isaías 13" → livro "Isaías", capítulo 13)
+  const livros = {};
+  (window.ESTUDOS || []).forEach(e => {
+    const m = e.ref.match(/^(.*\S)\s+(\d+)$/), livro = m ? m[1] : e.ref;
+    (livros[livro] = livros[livro] || []).push({ ...e, cap: m ? +m[2] : 0 });
+  });
+  const nomes = Object.keys(livros).sort((a, b) => ORDEM.indexOf(a) - ORDEM.indexOf(b));
+  document.getElementById('cards').innerHTML = nomes.length ? nomes.map(n => {
+    const caps = livros[n].sort((a, b) => a.cap - b.cap);
+    return `<a class="card rvi" href="#${slugify(n)}">
+      <div class="bgimg" style="background-image:url('${esc(caps[caps.length - 1].capa)}')"></div>
+      <div class="in"><div class="ref">${caps.length} ${caps.length > 1 ? 'capítulos' : 'capítulo'}</div><h3>${esc(n)}</h3>
+      <div class="dt">${caps.map(c => c.cap).join(' · ')}</div></div></a>`;
+  }).join('') : '<p class="empty rvi" style="grid-column:1/-1">O primeiro estudo aparece aqui. Qual capítulo vamos ler?</p>';
+
+  function abrir() {
+    const n = nomes.find(x => '#' + slugify(x) === location.hash), sec = document.getElementById('caps');
+    sec.hidden = !n;
+    if (!n) return;
+    document.getElementById('capsTitle').textContent = n;
+    document.getElementById('chapters').innerHTML = livros[n].map(c => `
+      <a class="chap" href="estudos/${esc(c.slug)}.html">
+        <div class="bgimg" style="background-image:url('${esc(c.capa)}')"></div>
+        <span class="cn">${c.cap}</span><div class="in"><h3>${esc(c.titulo)}</h3><div class="dt">estudado em ${esc(c.data)}</div></div>
+      </a>`).join('');
+    sec.scrollIntoView({ behavior: 'smooth' });
+  }
+  addEventListener('hashchange', abrir); abrir();
   const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('in')), {threshold: .15});
   document.querySelectorAll(".rvi").forEach(el => io.observe(el));
   setTimeout(() => document.querySelectorAll('.ihero .rvi').forEach((el, i) => setTimeout(() => el.classList.add('in'), i * 150)), 100);

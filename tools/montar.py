@@ -27,4 +27,13 @@ itens = [i for i in itens if i["slug"] != slug] + [item]
 open(lp, "w", encoding="utf-8").write(
     "// Um item por estudo, em ordem cronológica (o índice mostra o mais recente primeiro)\nwindow.ESTUDOS = "
     + json.dumps(itens, ensure_ascii=False, indent=1) + ";\n")
+# carimbo de versão nos assets de todos os estudos (o navegador/GitHub não usa CSS/JS velho do cache)
+import glob, time
+v = str(int(time.time()))
+for f in glob.glob(os.path.join(ROOT, "estudos", "*.html")):
+    t = open(f, encoding="utf-8").read()
+    t2 = re.sub(r'(\.\./assets/estudo\.(?:css|js))(\?v=\d+)?', lambda m: m.group(1) + "?v=" + v, t)
+    if t2 != t: open(f, "w", encoding="utf-8").write(t2)
+idx = os.path.join(ROOT, "index.html"); t = open(idx, encoding="utf-8").read()
+open(idx, "w", encoding="utf-8").write(re.sub(r'(assets/estudo\.css)(\?v=\d+)?', lambda m: m.group(1) + "?v=" + v, t))
 print("ok", path)

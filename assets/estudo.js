@@ -215,7 +215,7 @@
       .to(H + ' .photo', { opacity: 1, duration: .25, ease: 'none' }, .72)
       .to(H + ' .photo img', { scale: 1, duration: 1.1, ease: 'none' }, .1)
       .to(H + ' .bignum', { opacity: 0, duration: .12 }, .78)
-      .to(H + ' h1 i', { y: 0, stagger: .1, ease: 'power3.out', duration: .4 }, 1.05)
+      .to(H + ' h1 i', { yPercent: 0, y: 0, opacity: 1, stagger: .1, ease: 'power3.out', duration: .4 }, 1.05)
       .to(H + ' .htitle .ref,' + H + ' .htitle p,' + H + ' .credit', { opacity: 1, duration: .3 }, 1.25);
 
     // faixas: andam sempre, aceleram e invertem com a velocidade da rolagem

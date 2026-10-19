@@ -65,14 +65,14 @@ body::after{content:"";position:fixed;inset:-50%;pointer-events:none;z-index:100
 .htitle .ref{font-size:13px;letter-spacing:.35em;text-transform:uppercase;color:var(--gold2);margin-bottom:12px;opacity:0}
 .htitle h1{font-family:var(--serif);font-weight:600;font-size:clamp(52px,10vw,150px);line-height:.92}
 .htitle h1 span{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.06em}
-.htitle h1 i{display:block;font-style:normal;transform:translateY(110%)}
+.htitle h1 i{display:block;font-style:normal;transform:translateY(150%);opacity:0}
 .htitle p{font-family:var(--serif);font-style:italic;font-size:clamp(19px,2.6vw,28px);margin-top:14px;max-width:760px;opacity:0}
 .hero .credit{position:absolute;bottom:8px;right:14px;z-index:3;font-size:10px;opacity:0;color:#a8987f}
 .hero.loop{height:150vh;overflow:visible}
 .hero.loop .stage{position:sticky;top:0;height:100vh;inset:auto}
 .hero.loop .corners{position:sticky;top:0;height:100vh;margin-top:-100vh}
 .hero.loop .corners .corner,.hero.loop .scrollhint{position:absolute}
-.nofx .htitle h1 i{transform:none}.nofx .htitle .ref,.nofx .htitle p,.nofx .hero .credit{opacity:1}
+.nofx .htitle h1 i{transform:none;opacity:1}.nofx .htitle .ref,.nofx .htitle p,.nofx .hero .credit{opacity:1}
 .nofx .hero:not(.loop) .photo{opacity:.45}.nofx .hero:not(.loop) .bignum{opacity:.0}
 .nofx .hero.loop{display:none}
 

@@ -7,3 +7,4 @@ Diário de estudos bíblicos, capítulo por capítulo — https://gabriel-glll.g
 - `tools/montar.py <slug> conteudo.json` — aplica introdução/anotações e atualiza o índice
 
 Texto bíblico: Bíblia Livre 2018 (CC BY). ARA/NAA (© SBB) só em comparações curtas.
+- Botão **✎ Anotar** (ou tecla N) em cada estudo: painel lateral de anotações, salvo no navegador; "Citar trecho" cola o texto selecionado

@@ -173,6 +173,78 @@
   };
   document.body.appendChild(ls);
 
+  // ---------- anotações (painel lateral, salvo no navegador por estudo) ----------
+  const NK = 'estudos-notas:';
+  const store = {
+    get: k => { try { return localStorage.getItem(k) || ''; } catch { return ''; } },
+    set: (k, v) => { try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); return true; } catch { return false; } },
+    all: () => { try { return Object.keys(localStorage).filter(k => k.startsWith(NK)).map(k => [k.slice(NK.length), localStorage.getItem(k)]).filter(([, v]) => v); } catch { return []; } },
+  };
+  const nomeDe = s => s.replace(/-(\d+)$/, ' $1').replace(/^./, c => c.toUpperCase());
+  document.body.insertAdjacentHTML('beforeend', `
+  <button id="noteFab" type="button" title="Anotações (tecla N)"><span class="ico">✎</span><span class="lbl">Anotar</span></button>
+  <aside id="notePanel" data-lenis-prevent aria-hidden="true" aria-label="Anotações">
+    <div class="nh"><div><div class="kicker">Minhas anotações</div><h3>${esc(ref)}</h3></div><button type="button" class="nx" title="Fechar (Esc)">×</button></div>
+    <textarea id="noteTxt" placeholder="Escreva aqui suas perguntas e o que chamou atenção…&#10;&#10;Dica: selecione um trecho da página e toque em “Citar trecho”."></textarea>
+    <div class="nbar">
+      <button type="button" data-a="citar">❝ Citar trecho</button>
+      <button type="button" data-a="copiar">Copiar</button>
+      <button type="button" data-a="baixar">Baixar todas</button>
+      <span class="nst" id="noteSt"></span>
+    </div>
+    <div class="nother" id="noteOther"></div>
+  </aside>`);
+  const fab = $('#noteFab'), pan = $('#notePanel'), ta = $('#noteTxt'), st = $('#noteSt');
+  ta.value = store.get(NK + slug);
+  let lastSel = '', stT;
+  const flash = t => { st.textContent = t; clearTimeout(stT); stT = setTimeout(() => st.textContent = '', 1800); };
+  const save = () => flash(store.set(NK + slug, ta.value.trim() ? ta.value : '') ? 'salvo ✓' : 'não foi possível salvar');
+  let sv; ta.addEventListener('input', () => { clearTimeout(sv); sv = setTimeout(save, 400); });
+  const others = () => {
+    const o = store.all().filter(([s]) => s !== slug);
+    $('#noteOther').innerHTML = o.length ? `<div class="kicker">Anotações de outros capítulos</div>` + o.map(([s, v]) =>
+      `<details><summary><a href="${esc(s)}.html">${esc(nomeDe(s))}</a></summary><pre>${esc(v)}</pre></details>`).join('') : '';
+  };
+  const open = on => {
+    pan.classList.toggle('on', on); pan.setAttribute('aria-hidden', !on); fab.classList.toggle('hide', on);
+    if (on) { others(); setTimeout(() => ta.focus(), 250); }
+  };
+  // guarda a seleção feita no texto do estudo (fora do painel), para poder citar
+  document.addEventListener('selectionchange', () => {
+    const s = getSelection(), t = String(s).trim();
+    if (t && !pan.contains(s.anchorNode)) lastSel = t;
+    fab.classList.toggle('sel', !!t && !pan.contains(s.anchorNode));
+    $('.lbl', fab).textContent = fab.classList.contains('sel') ? 'Anotar trecho' : 'Anotar';
+  });
+  const citar = () => {
+    if (!lastSel) return flash('selecione um trecho da página antes');
+    const q = lastSel.replace(/\s+/g, ' ').replace(/(^|\s)(\d{1,3})(?=[A-Za-zÀ-ú])/g, '$1(v. $2) '); // "3Porém" → "(v. 3) Porém"
+    ta.value = (ta.value.trim() ? ta.value.replace(/\s*$/, '\n\n') : '') + `❝ ${q} ❞\n→ `;
+    lastSel = ''; save(); ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); ta.scrollTop = ta.scrollHeight;
+  };
+  fab.addEventListener('mousedown', e => e.preventDefault()); // não perde a seleção ao clicar
+  fab.onclick = () => { const temSel = fab.classList.contains('sel'); open(true); if (temSel) citar(); };
+  $('.nx', pan).onclick = () => open(false);
+  $('.nbar', pan).onclick = async e => {
+    const a = e.target.dataset?.a; if (!a) return;
+    if (a === 'citar') citar();
+    if (a === 'copiar') {
+      const t = `${ref}\n\n${ta.value}`;
+      try { await navigator.clipboard.writeText(t); flash('copiado ✓'); } catch { ta.select(); document.execCommand('copy'); flash('copiado ✓'); }
+    }
+    if (a === 'baixar') {
+      const t = store.all().map(([s, v]) => `===== ${nomeDe(s)} =====\n${v.trim()}\n`).join('\n') || `${ref}\n\n${ta.value}`;
+      const u = URL.createObjectURL(new Blob([t], { type: 'text/plain;charset=utf-8' }));
+      Object.assign(document.createElement('a'), { href: u, download: 'anotacoes-estudos-biblicos.txt' }).click();
+      setTimeout(() => URL.revokeObjectURL(u), 1000);
+    }
+  };
+  addEventListener('keydown', e => {
+    if (e.key === 'Escape' && pan.classList.contains('on')) open(false);
+    else if ((e.key === 'n' || e.key === 'N') && !e.ctrlKey && !e.metaKey && !e.altKey && !/INPUT|TEXTAREA/.test(document.activeElement?.tagName)) { e.preventDefault(); open(!pan.classList.contains('on')); }
+  });
+  addEventListener('storage', e => { if (e.key === NK + slug && document.activeElement !== ta) ta.value = e.newValue || ''; });
+
   // ---------- efeitos ----------
   const load = src => new Promise((ok, err) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = err; document.head.appendChild(s); });
   const basic = () => { // fallback sem GSAP

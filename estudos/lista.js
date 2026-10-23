@@ -20,5 +20,12 @@ window.ESTUDOS = [
   "titulo": "Tirado das águas",
   "data": "20/10/2026",
   "capa": "img/exodo-2-capa.jpg"
+ },
+ {
+  "slug": "exodo-3",
+  "ref": "Êxodo 3",
+  "titulo": "A sarça que não se consumia",
+  "data": "22/10/2026",
+  "capa": "img/exodo-3-capa.jpg"
  }
 ];
